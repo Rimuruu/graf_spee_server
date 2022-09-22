@@ -1,0 +1,9 @@
+{
+    "SERVER": {
+        "IP": "localhost",
+        "PORT": "8080"
+    },
+    "AUTH": {
+        "users": { "admin": "1234" }
+    }
+}

@@ -1,0 +1,1 @@
+{"version":3,"file":"torrent.js","sourceRoot":"","sources":["../../src/torrent/torrent.ts"],"names":[],"mappings":";;;AAIA,SAAgB,aAAa,CAAC,MAAe,EAAE,IAAU;IACrD,KAAI,IAAI,CAAC,IAAI,IAAI,EAAC;QACd;;4EAEoE;QACxE,IAAG,IAAI,CAAC,CAAC,CAAC,CAAC,SAAS,CAAC,aAAa,CAAC,MAAM,CAAC,IAAE,CAAC,EAAC;YAC1C,OAAO,IAAI,CAAC;SACf;KAEJ;IACA,OAAO,KAAK,CAAC;AACd,CAAC;AAXD,sCAWC"}
