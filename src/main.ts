@@ -1,8 +1,12 @@
 import express from 'express'
 import { TorrentManager } from './torrent/torrent';
 import config from './config.json'
+const parseTorrent = require('parse-torrent')
+const path = require('node:path');
 let app = express();
-let tm : TorrentManager = new TorrentManager();
+let currentPath = path.join(__dirname+'\\cache');
+console.log(currentPath);
+let tm : TorrentManager = new TorrentManager(currentPath);
 
 
 const basicAuth = require('express-basic-auth')
@@ -13,8 +17,9 @@ app.get('/', function (req, res) {
 });
 
 app.post('/torrent', function (req, res) {
-    
-       let response = tm.addTorrent(req.body.magnet)  
+      let unify = parseTorrent(req.body.magnet);
+      //console.log(unify)
+       let response = tm.addTorrent(unify)  
        res.send(response);
 
     

@@ -6,8 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const torrent_1 = require("./torrent/torrent");
 const config_json_1 = __importDefault(require("./config.json"));
+const parseTorrent = require('parse-torrent');
+const path = require('node:path');
 let app = (0, express_1.default)();
-let tm = new torrent_1.TorrentManager();
+let currentPath = path.join(__dirname + '\\cache');
+console.log(currentPath);
+let tm = new torrent_1.TorrentManager(currentPath);
 const basicAuth = require('express-basic-auth');
 app.use(basicAuth(config_json_1.default.AUTH));
 app.use(express_1.default.json());
@@ -15,7 +19,9 @@ app.get('/', function (req, res) {
     res.send('GET request to the homepage');
 });
 app.post('/torrent', function (req, res) {
-    let response = tm.addTorrent(req.body.magnet);
+    let unify = parseTorrent(req.body.magnet);
+    //console.log(unify)
+    let response = tm.addTorrent(unify);
     res.send(response);
 });
 app.get('/torrent', function (req, res) {

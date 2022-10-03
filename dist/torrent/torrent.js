@@ -1,17 +1,15 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TorrentManager = void 0;
-const lodash_1 = __importDefault(require("lodash"));
 const WebTorrent = require('webtorrent');
+const parseTorrent = require('parse-torrent');
 class TorrentManager {
-    constructor() {
+    constructor(path) {
         this.torrentList = {};
         this.client = new WebTorrent();
         this.id = 0;
         this.client.on('error', this.errorClient);
+        this.path = path;
     }
     errorClient(err) {
         this.torrentList = {};
@@ -23,48 +21,54 @@ class TorrentManager {
     }
     searchTorrent(magnet) {
         for (var i in this.torrentList) {
-            if (this.torrentList[i].magnetURI.localeCompare(magnet) == 0) {
+            let parsed = parseTorrent(this.torrentList[i].magnetURI);
+            //console.log("COMPARE " +parsed.infoHash +" "+magnet.infoHash)
+            if (parsed.infoHash.localeCompare(magnet.infoHash) == 0) {
                 return true;
             }
         }
         return false;
     }
-    torrentReady(id, torrent) {
+    torrentMeta(id, torrent) {
         let t = {
-            id: this.torrentList[id].id,
+            id: id,
             name: torrent.name,
             downloadSpeed: torrent.downloadSpeed,
             done: torrent.done,
             downloaded: torrent.downloaded,
             length: torrent.length,
-            magnetURI: this.torrentList[id].magnetURI
+            magnetURI: torrent.magnetURI
         };
-        console.log('Torrent ' + id + ' running');
+        console.log('Torrent ' + id + ' metadata ready');
         this.torrentList[id] = t;
     }
     torrentDl(id, torrent, bytes) {
         let t = {
-            id: this.torrentList[id].id,
+            id: id,
             name: torrent.name,
             downloadSpeed: torrent.downloadSpeed,
             done: torrent.done,
             downloaded: torrent.downloaded,
             length: torrent.length,
-            magnetURI: this.torrentList[id].magnetURI
+            magnetURI: torrent.magnetURI
         };
         this.torrentList[id] = t;
     }
     torrentDone(id, torrent) {
+        console.log("on done " + this + " " + id);
         let t = {
-            id: this.torrentList[id].id,
+            id: id,
             name: torrent.name,
             downloadSpeed: torrent.downloadSpeed,
             done: torrent.done,
             downloaded: torrent.downloaded,
             length: torrent.length,
-            magnetURI: this.torrentList[id].magnetURI
+            magnetURI: torrent.magnetURI
         };
-        console.log('Torrent ' + id + ' running');
+        console.log('Torrent ' + id + ' done ' + t.magnetURI);
+        torrent.files.forEach(function (file) {
+            console.log("file " + file.path);
+        });
         this.torrentList[id] = t;
     }
     addTorrent(magnet) {
@@ -80,14 +84,16 @@ class TorrentManager {
             done: undefined,
             downloaded: undefined,
             length: undefined,
-            magnetURI: magnet
+            magnetURI: parseTorrent.toMagnetURI(magnet)
         };
         this.torrentList[this.id] = t;
         try {
-            let torrent = this.client.add(magnet, (lodash_1.default.curry(this.torrentReady)(this.id)).bind(this))
-                .on('error', this.errorTorrent);
-            torrent.on('download', (lodash_1.default.curry(this.torrentDl)(this.id, torrent)).bind(this));
-            console.log('Torrent ' + this.id + ' added');
+            let instance = this;
+            let torrent = instance.client.add(magnet, { path: this.path }, function (torrent) { instance.torrentMeta(instance.id, torrent); })
+                .on('error', instance.errorTorrent);
+            torrent.on('download', function (bytes) { instance.torrentDl(instance.id, torrent, bytes); });
+            torrent.on('done', function () { instance.torrentDone(instance.id, torrent); });
+            console.log('Torrent ' + instance.id + ' added');
             return t;
         }
         catch (error) {
