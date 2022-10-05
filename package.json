@@ -1,5 +1,5 @@
 {
-  "name": "akashi_serv",
+  "name": "graf_spee_server",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Rimuruu/akashi_serv.git"
+    "url": "git+https://github.com/Rimuruu/graf_spee_server.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Rimuruu/akashi_serv/issues"
+    "url": "https://github.com/Rimuruu/graf_spee_server/issues"
   },
-  "homepage": "https://github.com/Rimuruu/akashi_serv#readme",
+  "homepage": "https://github.com/Rimuruu/graf_spee_server#readme",
   "dependencies": {
     "express": "^4.18.1",
     "express-basic-auth": "^1.2.1",
