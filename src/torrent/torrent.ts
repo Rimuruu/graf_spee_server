@@ -29,7 +29,6 @@ export class TorrentManager {
     public searchTorrent(magnet : any){
         for(var i in this.torrentList){
             let parsed = parseTorrent(this.torrentList[i].magnetURI);
-            //console.log("COMPARE " +parsed.infoHash +" "+magnet.infoHash)
         if(parsed.infoHash.localeCompare(magnet.infoHash)==0){
             return true;
         }
